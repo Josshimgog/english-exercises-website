@@ -20,9 +20,9 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Middleware
 // Adjust static and views paths to be relative to the project root, not the 'api' folder
-app.use(express.static(path.join(__dirname, '../public'))); 
+app.use(express.static(path.join(__dirname, '../public')));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views')); 
+app.set('views', path.join(__dirname, '../views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -227,7 +227,8 @@ app.get('/exercise/:slug/:sessionId', async (req, res) => {
                 userAnswers: existingSubmission.userAnswers,
                 score: existingSubmission.score,
                 totalQuestions: existingSubmission.totalQuestions,
-                timedOut: existingSubmission.leftPage // If it's timed out because they left
+                timedOut: existingSubmission.leftPage, // Pass timedOut if submission indicates it
+                leftPage: existingSubmission.leftPage // Explicitly pass leftPage
             });
         }
 
@@ -240,7 +241,8 @@ app.get('/exercise/:slug/:sessionId', async (req, res) => {
             userAnswers: [], // Empty for new attempt
             score: 0,
             totalQuestions: 0,
-            timedOut: false
+            timedOut: false, // Initialize for initial render
+            leftPage: false   // Initialize for initial render
         });
 
     } catch (error) {
@@ -385,6 +387,7 @@ async function handleExerciseCompletion(req, res, timedOut, userAnswers = [], le
             score: submission.score,
             totalQuestions: submission.totalQuestions,
             timedOut: timedOut || leftPageDetected,
+            leftPage: leftPageDetected, // Ensure this is also passed
             correctAnswers: exercise.answers // Pass correct answers for review
         });
 
@@ -404,8 +407,8 @@ async function handleExerciseCompletion(req, res, timedOut, userAnswers = [], le
 
 // 404 Handler (optional but good practice)
 app.use((req, res, next) => {
-    res.status(404).render('404', { message: 'Уучлаарай, энэ хуудас олдсонгүй.' }); 
-    // You'd need to create a simple 404.ejs view file
+    // You'd need to create a simple 404.ejs view file in your 'views' directory
+    res.status(404).render('404', { message: 'Уучлаарай, энэ хуудас олдсонгүй.' });
 });
 
 // IMPORTANT: Do NOT use app.listen() here when deploying to Vercel.
