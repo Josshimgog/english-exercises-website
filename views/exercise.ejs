@@ -1,65 +1,149 @@
-<!DOCTYPE html>
-<html lang="mn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= exercise.title %> - Дасгал</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <h1 class="main-title"><%= exercise.title %></h1>
-        <p class="description-text"><%= exercise.description %></p>
+<form id="exerciseForm" action="/submit-exercise/<%= exercise.slug %>/<%= sessionId %>" method="POST">
+    <% exercise.questions.forEach((question, index) => { %>
+        <div class="question-container">
+            <label for="answer<%= index %>">Асуулт <%= index + 1 %>: <%= question %></label>
+            <input type="text" id="answer<%= index %>" name="answers[]" required>
+        </div>
+    <% }); %>
 
-        <% if (!showResults) { %>
-            <div class="top-bar">
-                <span class="warning-text">Энэ хуудаснаас бүү гараарай. Амжилт хүсье!</span>
-                <span class="timer-text">Үлдсэн хугацаа: <span id="countdown">20:00</span></span>
-            </div>
+    <button type="submit" id="finishButton">Дуусгах</button>
+</form>
 
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
+<script>
+    // Get form and finish button
+    const exerciseForm = document.getElementById('exerciseForm');
+    const finishButton = document.getElementById('finishButton');
+    const userName = "<%= userName %>";
+    const sessionId = "<%= sessionId %>";
+    const exerciseSlug = "<%= exercise.slug %>"; // Make slug available in JS
 
-            <form id="exerciseForm" action="/submit-exercise/<%= exercise.slug %>/<%= sessionId %>" method="POST">
-                <div class="questions-container" data-total-questions="<%= exercise.questions.length %>">
-                    <% exercise.questions.forEach((question, index) => { %>
-                        <div class="question-item <%= index === 0 ? 'active' : 'hidden' %>" data-question-index="<%= index %>">
-                            <label for="answer<%= index %>" class="question-label"><%= index + 1 %>. <%= question %></label>
-                            <input type="text" id="answer<%= index %>" name="answers[]" class="answer-input" required>
-                        </div>
-                    <% }); %>
-                </div>
-                <div class="navigation-buttons">
-                    <button type="button" id="prevQuestion" class="nav-button prev-button hidden">Өмнөх</button> <button type="button" id="nextQuestion" class="nav-button next-button">Дараагийн</button> <button type="submit" class="submit-button hidden" id="finishButton">Дуусгах</button> </div>
-            </form>
-        <% } else { %>
-            <div class="results-container">
-                <% if (timedOut) { %>
-                    <h2 class="results-title failure">Хугацаа дууссан эсвэл хуудаснаас гарсан тул дасгал хүчингүй боллоо.</h2>
+    // Prevent default form submission and handle with Fetch API
+    if (exerciseForm) {
+        exerciseForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Stop the default form submission (prevents page reload)
+
+            const formData = new FormData(exerciseForm);
+            const userAnswers = [];
+            for (let pair of formData.entries()) {
+                if (pair[0] === 'answers[]') { // Collect all answers
+                    userAnswers.push(pair[1]);
+                }
+            }
+            
+            // Send data to the server using Fetch API
+            try {
+                const response = await fetch(`/submit-exercise/${exerciseSlug}/${sessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answers: userAnswers }),
+                });
+
+                if (response.ok) {
+                    // If submission is successful, redirect to the same page but with results displayed
+                    // Or, even better, update the content dynamically without a full page load
+                    window.location.href = `/exercise/${exerciseSlug}/${sessionId}?showResults=true`; // This will trigger a new render of the results
+
+                    // Alternative: if you want to update dynamically without full page reload:
+                    // const data = await response.json(); // If your server sends back JSON results
+                    // updateResultsDisplay(data); // A function to show results directly in the DOM
+                } else {
+                    alert('Дасгалыг илгээхэд алдаа гарлаа. Дахин оролдоно уу.');
+                    console.error('Submission failed:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error during submission:', error);
+                alert('Сүлжээний алдаа гарлаа. Дахин оролдоно уу.');
+            }
+        });
+    }
+
+    // Client-side Activity Monitor (keep this)
+    let sessionActive = true;
+    let timerStarted = false; // Add a flag to ensure timer starts only once
+
+    function sendActivity(type) {
+        if (!sessionActive) return;
+
+        fetch(`/activity-monitor/${sessionId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: type })
+        }).then(response => {
+            if (!response.ok) console.error('Failed to send activity:', response.statusText);
+        }).catch(error => console.error('Error sending activity:', error));
+    }
+
+    // Monitor tab focus/blur
+    window.addEventListener('blur', () => {
+        if (!document.hidden) { // Check if the window itself is hidden
+            sendActivity('blur');
+            sessionActive = false; // Mark session as inactive
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        // We only care about blur causing loss, focus doesn't revert it for this logic
+        // If you had a mechanism to re-enable, you'd do it here.
+    });
+
+    // Initial check for activity monitor (only if timer hasn't started)
+    if (!timerStarted) {
+        // You might want to initialize timerStarted based on session.startTime
+        // from the server-side context here, if it was already active.
+        // For now, assuming it starts when page loads or form is interacted with.
+        timerStarted = true; // Mark timer as started
+    }
+
+    // Handle initial page load to hide or show results
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('showResults') === 'true') {
+            // Logic to display results section and hide exercise form
+            document.getElementById('exerciseForm').style.display = 'none';
+            document.getElementById('resultsDisplay').style.display = 'block'; // Assuming you have a div for results
+        } else {
+            document.getElementById('exerciseForm').style.display = 'block';
+            document.getElementById('resultsDisplay').style.display = 'none';
+        }
+    };
+
+    // If you plan to implement dynamic results (without full page refresh)
+    // function updateResultsDisplay(data) {
+    //     // Populate results into your HTML elements
+    //     document.getElementById('scoreDisplay').innerText = data.score;
+    //     // ... and so on
+    //     document.getElementById('exerciseForm').style.display = 'none';
+    //     document.getElementById('resultsDisplay').style.display = 'block';
+    // }
+
+</script>
+
+<div id="resultsDisplay" style="display:none;">
+    <h2>Дасгалын Үр дүн</h2>
+    <p>Оноо: <span id="scoreDisplay"><%= score %></span> / <%= totalQuestions %></p>
+    <% if (timedOut) { %>
+        <p class="warning-message">Хугацаа дууссан тул та 0 оноо авлаа.</p>
+    <% } %>
+    <% if (leftPage) { %>
+        <p class="warning-message">Та хуудсыг орхисон тул 0 оноо авлаа.</p>
+    <% } %>
+
+    <h3>Таны хариултууд:</h3>
+    <ul>
+        <% exercise.questions.forEach((question, index) => { %>
+            <li>
+                <strong>Асуулт <%= index + 1 %>:</strong> <%= question %> <br>
+                <strong>Таны хариулт:</strong> "<%= userAnswers[index] %>" <br>
+                <strong>Зөв хариулт:</strong> "<%= correctAnswers[index] %>"
+                <% if (userAnswers[index] && userAnswers[index].toLowerCase().trim() === correctAnswers[index].toLowerCase().trim()) { %>
+                    <span style="color: green;">(Зөв)</span>
                 <% } else { %>
-                    <h2 class="results-title success">Таны хариулт</h2>
+                    <span style="color: red;">(Буруу)</span>
                 <% } %>
-                <p class="score-text">Таны оноо: <%= score %> / <%= totalQuestions %></p>
-
-                <div class="answers-review">
-                    <% exercise.questions.forEach((question, index) => { %>
-                        <div class="answer-item">
-                            <p class="question-label"><%= index + 1 %>. <%= question %></p>
-                            <p class="your-answer <%= userAnswers[index] && (userAnswers[index].toLowerCase().trim() === correctAnswers[index].toLowerCase().trim()) ? 'correct-answer' : 'incorrect-answer' %>">
-                                Таны хариулт: 
-                                <%= userAnswers[index] && userAnswers[index].trim() !== '' ? userAnswers[index] : 'Хариулаагүй' %>
-                            </p>
-                            <p class="correct-answer-text">Зөв хариулт: <%= correctAnswers[index] %></p>
-                        </div>
-                    <% }); %>
-                </div>
-                <button onclick="location.href='/'" class="back-home-button">Нүүр хуудас руу буцах</button>
-            </div>
-        <% } %>
-    </div>
-
-    <script src="/js/script.js"></script>
-</body>
-</html>
+            </li>
+        <% }); %>
+    </ul>
+    <a href="/" class="button">Дахин дасгал хийх</a>
+</div>
