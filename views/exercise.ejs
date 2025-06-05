@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= exercise.title %> - Дасгал</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title"><%= exercise.title %></h1>
+        <p class="description-text"><%= exercise.description %></p>
+
+        <% if (!showResults) { %>
+            <div class="top-bar">
+                <span class="warning-text">Энэ хуудаснаас бүү гараарай. Амжилт хүсье!</span>
+                <span class="timer-text">Үлдсэн хугацаа: <span id="countdown">20:00</span></span>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <form id="exerciseForm" action="/submit-exercise/<%= exercise.slug %>/<%= sessionId %>" method="POST">
+                <div class="questions-container" data-total-questions="<%= exercise.questions.length %>">
+                    <% exercise.questions.forEach((question, index) => { %>
+                        <div class="question-item <%= index === 0 ? 'active' : 'hidden' %>" data-question-index="<%= index %>">
+                            <label for="answer<%= index %>" class="question-label"><%= index + 1 %>. <%= question %></label>
+                            <input type="text" id="answer<%= index %>" name="answers[]" class="answer-input" required>
+                        </div>
+                    <% }); %>
+                </div>
+                <div class="navigation-buttons">
+                    <button type="button" id="prevQuestion" class="nav-button prev-button hidden">Өмнөх</button> <button type="button" id="nextQuestion" class="nav-button next-button">Дараагийн</button> <button type="submit" class="submit-button hidden" id="finishButton">Дуусгах</button> </div>
+            </form>
+        <% } else { %>
+            <div class="results-container">
+                <% if (timedOut) { %>
+                    <h2 class="results-title failure">Хугацаа дууссан эсвэл хуудаснаас гарсан тул дасгал хүчингүй боллоо.</h2>
+                <% } else { %>
+                    <h2 class="results-title success">Таны хариулт</h2>
+                <% } %>
+                <p class="score-text">Таны оноо: <%= score %> / <%= totalQuestions %></p>
+
+                <div class="answers-review">
+                    <% exercise.questions.forEach((question, index) => { %>
+                        <div class="answer-item">
+                            <p class="question-label"><%= index + 1 %>. <%= question %></p>
+                            <p class="your-answer <%= userAnswers[index] && (userAnswers[index].toLowerCase().trim() === correctAnswers[index].toLowerCase().trim()) ? 'correct-answer' : 'incorrect-answer' %>">
+                                Таны хариулт: 
+                                <%= userAnswers[index] && userAnswers[index].trim() !== '' ? userAnswers[index] : 'Хариулаагүй' %>
+                            </p>
+                            <p class="correct-answer-text">Зөв хариулт: <%= correctAnswers[index] %></p>
+                        </div>
+                    <% }); %>
+                </div>
+                <button onclick="location.href='/'" class="back-home-button">Нүүр хуудас руу буцах</button>
+            </div>
+        <% } %>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>

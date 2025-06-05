@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Англи Хэлний Дасгалууд</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">Англи Хэлний Дасгалын Систем</h1>
+
+        <form action="/start-exercise" method="POST" class="name-form" id="nameForm">
+            <label for="userName">Таны нэр:</label>
+            <input type="text" id="userName" name="userName" placeholder="Нэрээ оруулна уу" required autocomplete="name">
+            <button type="button" class="start-button" id="enableExercisesButton">Эхлэх</button>
+        </form>
+
+        <h2 class="exercises-title hidden" id="exercisesTitle">Дасгалын жагсаалт</h2>
+        <div class="exercise-list hidden" id="exerciseList">
+            <% exercises.forEach(exercise => { %>
+                <div class="exercise-card" data-slug="<%= exercise.slug %>">
+                    <span class="exercise-subject"><%= exercise.subject %> 7</span> <h3 class="exercise-card-title"><%= exercise.title %></h3>
+                    <p class="exercise-card-description"><%= exercise.description %></p>
+                    <button type="button" class="exercise-button">Дасгал руу орох</button>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+/* public/css/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+    --bg-color: #1a1a2e; /* Dark background */
+    --card-bg-color: rgba(27, 27, 46, 0.7); /* Slightly transparent card background */
+    --text-color: #e0e0e0; /* Light text */
+    --accent-color: #00bcd4; /* Cyan accent for outlines/buttons */
+    --secondary-accent-color: #007bb2; /* Darker cyan */
+    --success-color: #4CAF50; /* Green for success */
+    --failure-color: #F44336; /* Red for failure */
+    --warning-color: #FFC107; /* Yellow for warnings */
+    --border-radius: 12px;
+    --input-bg-color: rgba(255, 255, 255, 0.08); /* Light input background */
+    --input-border-color: rgba(0, 188, 212, 0.5); /* Semi-transparent cyan border */
+    --subject-bg-color: rgba(0, 188, 212, 0.2); /* For the subject tags */
+    --subject-text-color: #00bcd4;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scroll due to animations */
+}
+
+.container {
+    background-color: var(--card-bg-color);
+    border: 2px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 0 30px rgba(0, 188, 212, 0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden; /* For containing animations */
+}
+
+.main-title {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
+    opacity: 0; /* For initial animation */
+    transform: translateY(-20px); /* For initial animation */
+    animation: fadeInSlideDown 0.8s forwards;
+    animation-delay: 0.2s;
+}
+
+.description-text {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.1em;
+    color: rgba(224, 224, 224, 0.8);
+}
+
+/* --- Homepage Styles --- */
+.name-form {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+    animation-delay: 0.5s;
+}
+
+.name-form label {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.name-form input[type="text"] {
+    width: 70%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1.1em;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 188, 212, 0.2);
+}
+
+.name-form input[type="text"]::placeholder {
+    color: rgba(224, 224, 224, 0.5);
+}
+
+.name-form input[type="text"]:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.5);
+}
+
+.start-button, .exercise-button, .submit-button, .back-home-button, .nav-button {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 15px;
+    position: relative; /* For ripple effect */
+    overflow: hidden; /* For ripple effect */
+}
+
+.start-button:hover, .exercise-button:hover, .submit-button:hover, .back-home-button:hover, .nav-button:hover {
+    background-color: var(--secondary-accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 188, 212, 0.4);
+}
+
+.start-button:active, .exercise-button:active, .submit-button:active, .back-home-button:active, .nav-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    animation: ripple 0.6s linear forwards;
+    transform: scale(0);
+    opacity: 1;
+}
+
+@keyframes ripple {
+    from {
+        transform: scale(0);
+        opacity: 1;
+    }
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+
+.exercises-title {
+    color: var(--accent-color);
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+}
+
+.exercise-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.exercise-card {
+    background-color: rgba(43, 43, 64, 0.7);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    opacity: 0; /* For card reveal animation */
+    transform: translateY(20px);
+    cursor: pointer;
+    position: relative; /* For subject tag positioning */
+}
+
+.exercise-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 188, 212, 0.5);
+    border-color: var(--secondary-accent-color);
+}
+
+.exercise-subject {
+    position: absolute;
+    top: -10px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--subject-bg-color);
+    color: var(--subject-text-color);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    border: 1px solid var(--subject-text-color);
+    box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+
+.exercise-card-title {
+    color: var(--accent-color);
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+    margin-top: 15px; /* Space for subject tag */
+}
+
+.exercise-card-description {
+    font-size: 0.95em;
+    color: rgba(224, 224, 224, 0.8);
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.exercise-button {
+    width: 100%;
+}
+
+/* Hidden Utility Class */
+.hidden {
+    display: none !important;
+}
+
+/* --- Exercise Page Styles --- */
+.top-bar {
+    background-color: rgba(0, 188, 212, 0.15);
+    border: 1px solid rgba(0, 188, 212, 0.5);
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px; /* Reduced margin to make space for progress bar */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.1em;
+    color: var(--accent-color);
+    opacity: 0;
+    transform: translateY(-15px);
+    animation: fadeInSlideDown 0.6s forwards;
+    animation-delay: 0.2s;
+}
+
+.warning-text {
+    color: var(--warning-color);
+    text-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+.timer-text {
+    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(224, 224, 224, 0.3);
+}
+
+#countdown {
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.progress-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    height: 10px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 188, 212, 0.4);
+    box-shadow: inset 0 0 8px rgba(0, 188, 212, 0.2);
+    opacity: 0;
+    animation: fadeIn 0.6s forwards;
+    animation-delay: 0.4s;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent-color));
+    border-radius: 5px;
+    transition: width 0.3s ease-out;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.questions-container {
+    margin-bottom: 30px;
+    position: relative; /* For absolute positioning of question items */
+    min-height: 200px; /* To prevent layout shift when questions change */
+}
+
+.question-item {
+    background-color: rgba(43, 43, 64, 0.5);
+    border: 1px solid rgba(0, 188, 212, 0.3);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 20px; /* Only for when they are not absolutely positioned */
+    transition: all 0.3s ease;
+    position: absolute; /* To allow animation for sliding questions */
+    width: 100%;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    transform: translateX(100%); /* Initial state for coming from right */
+    opacity: 0;
+    animation: slideInFromRight 0.5s forwards;
+    animation-delay: 0.6s;
+}
+
+.question-item.active {
+    position: relative; /* Active question takes up space */
+    transform: translateX(0);
+    opacity: 1;
+    animation: none; /* Disable initial animation if activated by JS */
+}
+
+.question-item.slide-out-left {
+    animation: slideOutToLeft 0.5s forwards;
+}
+
+.question-item.slide-in-right {
+    animation: slideInFromRight 0.5s forwards;
+}
+
+.question-item.slide-out-right {
+    animation: slideOutToRight 0.5s forwards;
+}
+
+.question-item.slide-in-left {
+    animation: slideInFromLeft 0.5s forwards;
+}
+
+
+.question-item:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+}
+
+.question-label {
+    display: block;
+    font-size: 1.15em;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.answer-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-size: 1em;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.nav-button {
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+.submit-button {
+    display: block;
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* --- Results Page Styles --- */
+.results-container {
+    text-align: center;
+    padding: 30px;
+    border: 2px solid;
+    border-radius: var(--border-radius);
+    background-color: rgba(43, 43, 64, 0.7);
+    box-shadow: 0 0 25px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInSlideUp 0.8s forwards;
+    animation-delay: 0.2s;
+}
+
+.results-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-shadow: 0 0 10px;
+}
+
+.results-title.success {
+    color: var(--success-color);
+    border-color: var(--success-color);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.5);
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+}
+
+.results-title.failure {
+    color: var(--failure-color);
+    border-color: var(--failure-color);
+    box-shadow: 0 0 25px rgba(244, 67, 54, 0.5);
+    text-shadow: 0 0 10px rgba(244, 67, 54, 0.8);
+}
+
+.score-text {
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.answers-review {
+    text-align: left;
+    margin-top: 30px;
+    background-color: rgba(27, 27, 46, 0.5);
+    border: 1px solid rgba(224, 224, 224, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.answer-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed rgba(224, 224, 224, 0.1);
+}
+
+.answer-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.answer-item .question-label {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    color: var(--accent-color);
+}
+
+.your-answer, .correct-answer-text {
+    font-size: 1em;
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+.correct-answer {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.incorrect-answer {
+    color: var(--failure-color);
+    font-weight: 600;
+}
+
+.correct-answer-text {
+    color: var(--text-color);
+    font-style: italic;
+    font-weight: 400;
+}
+
+.back-home-button {
+    margin-top: 40px;
+    width: auto;
+    padding: 12px 25px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0%); opacity: 1; }
+}
+
+@keyframes slideOutToLeft {
+    from { transform: translateX(0%); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes slideInFromLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0%); opacity: 1; }
+}
+
+@keyframes slideOutToRight {
+    from { transform: translateX(0%); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Card reveal animation with stagger */
+.exercise-list.revealed .exercise-card {
+    animation: fadeInSlideUp 0.6s forwards;
+}
+
+.exercise-list.revealed .exercise-card:nth-child(1) { animation-delay: 0.1s; }
+.exercise-list.revealed .exercise-card:nth-child(2) { animation-delay: 0.2s; }
+.exercise-list.revealed .exercise-card:nth-child(3) { animation-delay: 0.3s; }
+.exercise-list.revealed .exercise-card:nth-child(4) { animation-delay: 0.4s; }
+.exercise-list.revealed .exercise-card:nth-child(5) { animation-delay: 0.5s; }
+.exercise-list.revealed .exercise-card:nth-child(6) { animation-delay: 0.6s; }
+.exercise-list.revealed .exercise-card:nth-child(7) { animation-delay: 0.7s; }
+/* Add more :nth-child rules if you have more than 7 initial cards */
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px;
+    }
+
+    .main-title {
+        font-size: 2em;
+    }
+
+    .name-form input[type="text"] {
+        width: 90%;
+    }
+
+    .exercises-title {
+        font-size: 1.8em;
+    }
+
+    .exercise-list {
+        grid-template-columns: 1fr; /* Stack cards on small screens */
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        font-size: 1em;
+    }
+
+    .warning-text, .timer-text {
+        text-align: center;
+    }
+
+    .results-title {
+        font-size: 1.6em;
+    }
+
+    .score-text {
+        font-size: 1.4em;
+    }
+
+    .navigation-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-button {
+        margin: 0;
+    }
+}
