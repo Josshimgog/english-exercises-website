@@ -227,8 +227,9 @@ app.get('/exercise/:slug/:sessionId', async (req, res) => {
                 userAnswers: existingSubmission.userAnswers,
                 score: existingSubmission.score,
                 totalQuestions: existingSubmission.totalQuestions,
-                timedOut: existingSubmission.leftPage, // Pass timedOut if submission indicates it
-                leftPage: existingSubmission.leftPage // Explicitly pass leftPage
+                timedOut: existingSubmission.leftPage,
+                leftPage: existingSubmission.leftPage,
+                correctAnswers: exercise.answers
             });
         }
 
@@ -241,8 +242,9 @@ app.get('/exercise/:slug/:sessionId', async (req, res) => {
             userAnswers: [], // Empty for new attempt
             score: 0,
             totalQuestions: 0,
-            timedOut: false, // Initialize for initial render
-            leftPage: false   // Initialize for initial render
+            timedOut: false,
+            leftPage: false,
+            correctAnswers: exercise.answers
         });
 
     } catch (error) {
@@ -387,7 +389,7 @@ async function handleExerciseCompletion(req, res, timedOut, userAnswers = [], le
             score: submission.score,
             totalQuestions: submission.totalQuestions,
             timedOut: timedOut || leftPageDetected,
-            leftPage: leftPageDetected, // Ensure this is also passed
+            leftPage: leftPageDetected,
             correctAnswers: exercise.answers // Pass correct answers for review
         });
 
@@ -407,7 +409,6 @@ async function handleExerciseCompletion(req, res, timedOut, userAnswers = [], le
 
 // 404 Handler (optional but good practice)
 app.use((req, res, next) => {
-    // You'd need to create a simple 404.ejs view file in your 'views' directory
     res.status(404).render('404', { message: 'Уучлаарай, энэ хуудас олдсонгүй.' });
 });
 
